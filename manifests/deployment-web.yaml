@@ -13,12 +13,12 @@ spec:
       labels:
         app: employees
     spec:
-      serviceAccountName: clo835_sa
+      serviceAccountName: clo835-sa
       containers:
         - name: webapp
-          image: YOUR_AWS_ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/YOUR_ECR_REPO:latest
+          image: 656725130383.dkr.ecr.us-east-1.amazonaws.com/webapp:latest
           ports:
-            - containerPort: 81
+            - containerPort: 8080
           env:
             - name: DBHOST
               value: "mysql"

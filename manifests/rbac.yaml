@@ -6,7 +6,7 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: clo835_sa
+  name: clo835-sa
   namespace: fp
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -24,7 +24,7 @@ metadata:
   name: clo835-role-binding
 subjects:
   - kind: ServiceAccount
-    name: clo835_sa
+    name: clo835-sa
     namespace: fp
 roleRef:
   kind: ClusterRole

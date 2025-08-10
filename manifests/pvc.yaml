@@ -4,9 +4,9 @@ metadata:
   name: mysql-pv-claim
   namespace: fp
 spec:
-  storageClassName: gp2
+  storageClassName: ebs-sc
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 3Gi
+      storage: 1Gi

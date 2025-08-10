@@ -13,10 +13,10 @@ spec:
       labels:
         app: mysql
     spec:
-      serviceAccountName: clo835_sa
+      serviceAccountName: clo835-sa
       containers:
         - name: mysql
-          image: mysql:8.0
+          image: 656725130383.dkr.ecr.us-east-1.amazonaws.com/mysql:latest
           ports:
             - containerPort: 3306
           env:
