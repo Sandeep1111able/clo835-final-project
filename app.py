@@ -33,27 +33,31 @@ def get_db_connection():
 
 def download_background_image_from_s3() -> None:
     if not S3_BUCKET or not BACKGROUND_IMAGE_KEY:
+        print("S3 bucket or background image key not configured. Skipping download.")
         return
 
     target_path = os.path.join("static", "background.jpg")
-    if os.path.exists(target_path):
-        return
-
+    
+    # Do not check for existence, always try to download to ensure freshness
+    # and to recover from previous failed attempts.
+    
     s3_url = f"s3://{S3_BUCKET}/{BACKGROUND_IMAGE_KEY}"
-    print(f"Configured background image URL: {s3_url}")
+    print(f"Attempting to download background image from {s3_url}")
 
     try:
         os.makedirs("static", exist_ok=True)
+        print(f"Ensured static directory exists.")
+        
         s3_client = boto3.client("s3", region_name=AWS_REGION)
         s3_client.download_file(S3_BUCKET, BACKGROUND_IMAGE_KEY, target_path)
-        print(f"Downloaded background image to {target_path}")
+        
+        print(f"Successfully downloaded background image to {target_path}")
     except Exception as e:
-        print(f"Failed to download background image from {s3_url}: {e}")
+        print(f"FATAL: Failed to download background image from {s3_url}: {e}")
 
 
 @app.route("/")
 def home():
-    download_background_image_from_s3()
     return render_template('index.html', group_name=GROUP_NAME, slogan=SLOGAN)
 
 @app.route("/about")
@@ -124,4 +128,8 @@ def get_employee():
 
 
 if __name__ == '__main__':
+    # Download the background image on startup
+    download_background_image_from_s3()
+    
+    # Start the Flask web server
     app.run(host='0.0.0.0', port=8080, debug=True)
