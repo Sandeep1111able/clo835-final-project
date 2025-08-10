@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get Employee Information</title>
+    <style>
+      body {
+        background-image: url("/static/background.jpg");
+        background-size: cover;
+        font-family: Arial, sans-serif;
+        color: #fff;
+        margin: 20px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      form {
+        margin-top: 20px;
+      }
+      label {
+        font-size: 18px;
+      }
+      input[type="text"] {
+        padding: 5px;
+        margin: 5px;
+      }
+      input[type="submit"] {
+        padding: 5px 10px;
+        background-color: #0066cc;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      input[type="submit"]:hover {
+        background-color: #0052a3;
+      }
+      a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{{ group_name }} - {{ slogan }}</h1>
+    <form action="/fetchdata" method="post">
+      <label>Employee ID:</label>
+      <input type="text" name="emp_id" />
+      <input type="submit" value="Fetch Info" />
+    </form>
+    <p><a href="/">Back to Home</a></p>
+  </body>
+</html>

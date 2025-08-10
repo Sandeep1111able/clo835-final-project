@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Employee Information</title>
+    <style>
+      body {
+        background-image: url("/static/background.jpg");
+        background-size: cover;
+        font-family: Arial, sans-serif;
+        color: #fff;
+        margin: 20px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      p {
+        font-size: 18px;
+      }
+      a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{{ group_name }} - {{ slogan }}</h1>
+    {% if id %}
+    <p>Employee ID: {{ id }}</p>
+    <p>First Name: {{ fname }}</p>
+    <p>Last Name: {{ lname }}</p>
+    <p>Primary Skill: {{ interest }}</p>
+    <p>Location: {{ location }}</p>
+    {% else %}
+    <p>Employee not found.</p>
+    {% endif %}
+    <p><a href="/getemp">Back to Get Employee</a></p>
+  </body>
+</html>
