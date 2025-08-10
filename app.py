@@ -35,12 +35,15 @@ def download_background_image_from_s3() -> None:
     if not S3_BUCKET or not BACKGROUND_IMAGE_KEY:
         return
 
+    target_path = os.path.join("static", "background.jpg")
+    if os.path.exists(target_path):
+        return
+
     s3_url = f"s3://{S3_BUCKET}/{BACKGROUND_IMAGE_KEY}"
     print(f"Configured background image URL: {s3_url}")
 
     try:
         os.makedirs("static", exist_ok=True)
-        target_path = os.path.join("static", "background.jpg")
         s3_client = boto3.client("s3", region_name=AWS_REGION)
         s3_client.download_file(S3_BUCKET, BACKGROUND_IMAGE_KEY, target_path)
         print(f"Downloaded background image to {target_path}")
@@ -50,81 +53,75 @@ def download_background_image_from_s3() -> None:
 
 @app.route("/")
 def home():
+    download_background_image_from_s3()
     return render_template('index.html', group_name=GROUP_NAME, slogan=SLOGAN)
 
 @app.route("/about")
 def about():
     return render_template('about.html', group_name=GROUP_NAME, slogan=SLOGAN)
 
-@app.route("/addemp", methods=['GET'])
-def addemp_form():
+@app.route("/addemp", methods=['GET', 'POST'])
+def add_employee():
+    if request.method == 'POST':
+        db_conn = get_db_connection()
+        if not db_conn:
+            return "Database service is unavailable.", 503
+
+        try:
+            emp_id = request.form['emp_id']
+            first_name = request.form['first_name']
+            last_name = request.form['last_name']
+            primary_skill = request.form['primary_skill']
+            location = request.form['location']
+            insert_sql = "INSERT INTO employee VALUES (%s, %s, %s, %s, %s)"
+            cursor = db_conn.cursor()
+            cursor.execute(insert_sql, (emp_id, first_name, last_name, primary_skill, location))
+            db_conn.commit()
+            emp_name = f"{first_name} {last_name}"
+            return render_template('addempoutput.html', name=emp_name, group_name=GROUP_NAME, slogan=SLOGAN)
+        except Exception as e:
+            return f"An error occurred: {str(e)}", 500
+        finally:
+            if db_conn:
+                db_conn.close()
+    
     return render_template('addemp.html', group_name=GROUP_NAME, slogan=SLOGAN)
 
-@app.route("/addemp", methods=['POST'])
-def AddEmp():
-    db_conn = get_db_connection()
-    if not db_conn:
-        return "Database service is unavailable.", 503
+@app.route("/getemp", methods=['GET', 'POST'])
+def get_employee():
+    if request.method == 'POST':
+        db_conn = get_db_connection()
+        if not db_conn:
+            return "Database service is unavailable.", 503
 
-    try:
-        emp_id = request.form['emp_id']
-        first_name = request.form['first_name']
-        last_name = request.form['last_name']
-        primary_skill = request.form['primary_skill']
-        location = request.form['location']
-        insert_sql = "INSERT INTO employee VALUES (%s, %s, %s, %s, %s)"
-        cursor = db_conn.cursor()
-        cursor.execute(insert_sql, (emp_id, first_name, last_name, primary_skill, location))
-        db_conn.commit()
-        emp_name = first_name + " " + last_name
-        return render_template('addempoutput.html', name=emp_name, group_name=GROUP_NAME, slogan=SLOGAN)
-    except Exception as e:
-        return f"An error occurred: {str(e)}", 500
-    finally:
-        if db_conn:
-            db_conn.close()
+        try:
+            emp_id = request.form['emp_id']
+            select_sql = "SELECT emp_id, first_name, last_name, primary_skill, location FROM employee WHERE emp_id=%s"
+            cursor = db_conn.cursor()
+            cursor.execute(select_sql, (emp_id,))
+            result = cursor.fetchone()
+            
+            output = {"group_name": GROUP_NAME, "slogan": SLOGAN}
+            if result:
+                output.update({
+                    "id": result[0],
+                    "fname": result[1],
+                    "lname": result[2],
+                    "interest": result[3],
+                    "location": result[4],
+                })
+            else:
+                output["id"] = None
+            return render_template("getempoutput.html", **output)
+            
+        except Exception as e:
+            return f"An error occurred: {str(e)}", 500
+        finally:
+            if db_conn:
+                db_conn.close()
 
-@app.route("/getemp")
-def GetEmp():
     return render_template("getemp.html", group_name=GROUP_NAME, slogan=SLOGAN)
 
-@app.route("/fetchdata", methods=['POST'])
-def FetchData():
-    db_conn = get_db_connection()
-    if not db_conn:
-        return "Database service is unavailable.", 503
-
-    try:
-        emp_id = request.form['emp_id']
-        select_sql = "SELECT emp_id, first_name, last_name, primary_skill, location FROM employee WHERE emp_id=%s"
-        cursor = db_conn.cursor()
-        cursor.execute(select_sql, (emp_id,))
-        result = cursor.fetchone()
-        if result:
-            found_id, first_name, last_name, primary_skill, location = result
-            return render_template(
-                "getempoutput.html",
-                id=found_id,
-                fname=first_name,
-                lname=last_name,
-                interest=primary_skill,
-                location=location,
-                group_name=GROUP_NAME,
-                slogan=SLOGAN,
-            )
-        else:
-            return render_template(
-                "getempoutput.html",
-                id=None,
-                group_name=GROUP_NAME,
-                slogan=SLOGAN,
-            )
-    except Exception as e:
-        return f"An error occurred: {str(e)}", 500
-    finally:
-        if db_conn:
-            db_conn.close()
 
 if __name__ == '__main__':
-    download_background_image_from_s3()
-    app.run(host='0.0.0.0', port=81, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)
