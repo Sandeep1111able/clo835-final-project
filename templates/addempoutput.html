@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Success</title>
+    <style>
+      body {
+        background-image: url("/static/background.jpg");
+        background-size: cover;
+        font-family: Arial, sans-serif;
+        color: #fff;
+        margin: 20px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      p {
+        font-size: 18px;
+      }
+      a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{{ group_name }} - {{ slogan }}</h1>
+    <p>The employee {{ name }} was added to the database.</p>
+    <p><a href="/">Back to Home</a></p>
+  </body>
+</html>
