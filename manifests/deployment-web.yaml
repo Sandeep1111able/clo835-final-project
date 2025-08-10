@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  namespace: fp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: employees
+  template:
+    metadata:
+      labels:
+        app: employees
+    spec:
+      serviceAccountName: clo835-sa
+      containers:
+        - name: webapp
+          image: 656725130383.dkr.ecr.us-east-1.amazonaws.com/webapp:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DBHOST
+              value: "mysql"
+            - name: DBPORT
+              value: "3306"
+            - name: DBUSER
+              value: "root"
+            - name: DATABASE
+              value: "employees"
+            - name: DBPWD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: password
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-secret
+                  key: AWS_SECRET_ACCESS_KEY
+          envFrom:
+            - configMapRef:
+                name: app-configmap
+      imagePullSecrets:
+        - name: regcred
+      nodeSelector: {}
