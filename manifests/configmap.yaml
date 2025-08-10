@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-configmap
+  namespace: fp
+data:
+  S3_BUCKET: ""
+  BACKGROUND_IMAGE: ""
+  AWS_REGION: "us-east-1"
+  GROUP_NAME: "Group 9"
+  SLOGAN: "Final Project"
