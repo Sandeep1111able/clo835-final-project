@@ -4,9 +4,7 @@ metadata:
   name: app-configmap
   namespace: fp
 data:
-  S3_BUCKET: "clo835-finalproject-group"
-  BACKGROUND_IMAGE: "background.jpg"
-  AWS_REGION: "us-east-1"
+  BACKGROUND_IMAGE_URL: "s3://clo835-finalproject-group/background.jpg"
   GROUP_NAME: "Group 9"
   SLOGAN: "Final Project"
 
