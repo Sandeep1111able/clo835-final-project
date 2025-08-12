@@ -13,7 +13,7 @@ DATABASE = os.environ.get("DATABASE", "employees")
 DBPORT = int(os.environ.get("DBPORT", 3306))
 GROUP_NAME = os.environ.get("GROUP_NAME", "Group 9")
 SLOGAN = os.environ.get("SLOGAN", "Final Project")
-BACKGROUND_IMAGE_URL = os.environ.get("BACKGROUND_IMAGE_URL")  # expects s3://bucket/key or https URL
+BACKGROUND_IMAGE_URL = os.environ.get("BACKGROUND_IMAGE_URL") 
 
 
 def s3_to_https(s3_uri: str) -> str:
